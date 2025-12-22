@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fortis Healthcare - Stock Ticker</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Arial", sans-serif;
+      background: #f6f7fb;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .ticker-wrap {
+      width: 100%;
+      max-width: 1400px;
+      background: #fff6cc;
+      border-radius: 12px;
+
+      /* ⭐ INCREASED HEIGHT HERE */
+      padding: 25px 25px; 
+      min-height: 80px;
+
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      border: 1px solid #f1e3a3;
+    }
+
+    .ticker-label {
+      font-weight: 700;
+      font-size: 16px;
+      min-width: 160px;
+      white-space: nowrap;
+    }
+
+    /* Wrapper for the two stock blocks */
+    .stocks {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Each NSE/BSE block centered and equal width */
+    .stock-block {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      white-space: nowrap;
+    }
+
+    .symbol {
+      font-weight: 700;
+      color: #0b2545;
+      font-size: 15px;
+    }
+
+    .price {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .change {
+      font-size: 14px;
+    }
+
+    .up { color: #0b7a2b; }
+    .down { color: #c02b2b; }
+
+    /* Vertical Line perfectly centered */
+    .sep {
+      width: 1px;
+      height: 70%;
+      background: rgba(0,0,0,0.25);
+      align-self: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="ticker-wrap">
+    <div class="ticker-label">STOCK PRICES:</div>
+
+    <div class="stocks">
+
+      <div class="stock-block">
+        <div class="symbol">FORTIS.NS (NSE)</div>
+        <div class="price" id="nse-price">Loading...</div>
+        <div class="change" id="nse-change">-</div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="stock-block">
+        <div class="symbol">FORTIS.BO (BSE)</div>
+        <div class="price" id="bse-price">Loading...</div>
+        <div class="change" id="bse-change">-</div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  function safeFixed(n, d = 2) {
+    return (typeof n === "number" && isFinite(n)) ? n.toFixed(d) : "-";
+  }
+
+  async function fetchStock(symbol) {
+    try {
+      const url = encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`);
+      const res = await fetch("https://api.allorigins.win/get?url=" + url);
+      const wrapper = await res.json();
+      const data = JSON.parse(wrapper.contents);
+
+      const meta = data.chart?.result?.[0]?.meta;
+      if (!meta) throw "Meta missing";
+
+      return {
+        price: meta.regularMarketPrice,
+        prev: meta.chartPreviousClose,
+        currency: meta.currency
+      };
+
+    } catch (e) {
+      return { error: true };
+    }
+  }
+
+  function updateDOM(priceId, changeId, data) {
+    const priceEl = document.getElementById(priceId);
+    const changeEl = document.getElementById(changeId);
+
+    if (data.error) {
+      priceEl.textContent = "Error";
+      changeEl.textContent = "-";
+      changeEl.className = "change";
+      return;
+    }
+
+    const price = Number(data.price);
+    const prev = Number(data.prev);
+    const diff = price - prev;
+    const percent = (diff / prev) * 100;
+
+    priceEl.textContent = "₹ " + safeFixed(price);
+
+    if (!isFinite(diff)) {
+      changeEl.textContent = "-";
+      changeEl.className = "change";
+      return;
+    }
+
+    const sign = diff > 0 ? "+" : "";
+    changeEl.textContent = `${sign}${safeFixed(diff)} (${safeFixed(percent)}%)`;
+    changeEl.className = diff > 0 ? "change up" : "change down";
+  }
+
+  async function loadPrices() {
+    const [nse, bse] = await Promise.all([
+      fetchStock("FORTIS.NS"),
+      fetchStock("FORTIS.BO"),
+    ]);
+
+    updateDOM("nse-price", "nse-change", nse);
+    updateDOM("bse-price", "bse-change", bse);
+  }
+
+  loadPrices();
+  setInterval(loadPrices, 30000);
+</script>
+
+</body>
+</html>

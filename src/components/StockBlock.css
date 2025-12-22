@@ -1,0 +1,32 @@
+/* Each NSE/BSE block centered and equal width */
+.stock-block {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.symbol {
+  font-weight: 700;
+  color: #0b2545;
+  font-size: 15px;
+}
+
+.price {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.change {
+  font-size: 14px;
+}
+
+.up {
+  color: #0b7a2b;
+}
+
+.down {
+  color: #c02b2b;
+}

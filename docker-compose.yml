@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  fortis-stock-ticker:
+    build: .
+    ports:
+      - "3000:80"
+    container_name: fortis-stock-app
+    restart: unless-stopped
