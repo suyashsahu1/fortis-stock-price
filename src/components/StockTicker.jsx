@@ -87,27 +87,26 @@ function StockTicker() {
 
   return (
     <div className="ticker-wrap">
-      <div className="ticker-label">
-        <img src={fortisLogo} alt="Fortis Logo" className="fortis-logo" />
-        STOCK PRICES:
-      </div>
+      <img src={fortisLogo} alt="Fortis Logo" className="fortis-logo" />
+      <div className="border">
+        <div className="stocks">
+          <div className="ticker-label">STOCK PRICES:</div>
+          <StockBlock
+            symbol="FORTIS.NS (NSE)"
+            price={loading ? "Loading..." : nseData.price}
+            change={loading ? "-" : nseData.change}
+            isUp={nseData.isUp}
+          />
 
-      <div className="stocks">
-        <StockBlock
-          symbol="FORTIS.NS (NSE)"
-          price={loading ? "Loading..." : nseData.price}
-          change={loading ? "-" : nseData.change}
-          isUp={nseData.isUp}
-        />
+          <div className="sep"></div>
 
-        <div className="sep"></div>
-
-        <StockBlock
-          symbol="FORTIS.BO (BSE)"
-          price={loading ? "Loading..." : bseData.price}
-          change={loading ? "-" : bseData.change}
-          isUp={bseData.isUp}
-        />
+          <StockBlock
+            symbol="FORTIS.BO (BSE)"
+            price={loading ? "Loading..." : bseData.price}
+            change={loading ? "-" : bseData.change}
+            isUp={bseData.isUp}
+          />
+        </div>
       </div>
     </div>
   );
