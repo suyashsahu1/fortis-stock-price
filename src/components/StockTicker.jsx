@@ -81,6 +81,8 @@ function StockTicker() {
 
   useEffect(() => {
     loadPrices();
+
+    // fetch stock prices after every 30 seconds
     const interval = setInterval(loadPrices, 30000);
     return () => clearInterval(interval);
   }, []);
