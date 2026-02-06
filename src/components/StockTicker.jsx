@@ -23,7 +23,7 @@ function StockTicker() {
   const fetchStock = async (symbol) => {
     try {
       const url = encodeURIComponent(
-        `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`
+        `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`,
       );
       const res = await fetch("https://api.allorigins.win/get?url=" + url);
       const wrapper = await res.json();
@@ -96,7 +96,7 @@ function StockTicker() {
           <StockBlock
             symbol="FORTIS.NS (NSE)"
             price={loading ? "Loading..." : nseData.price}
-            change={loading ? "-" : nseData.change}
+            change={loading ? "" : nseData.change}
             isUp={nseData.isUp}
           />
 
@@ -105,7 +105,7 @@ function StockTicker() {
           <StockBlock
             symbol="FORTIS.BO (BSE)"
             price={loading ? "Loading..." : bseData.price}
-            change={loading ? "-" : bseData.change}
+            change={loading ? "" : bseData.change}
             isUp={bseData.isUp}
           />
         </div>
